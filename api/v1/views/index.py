@@ -1,31 +1,34 @@
 #!/usr/bin/python3
-"""index file, main view file
 """
-from api.v1.views import app_views
+an endpoint that retrieves the number of each objects by type
+"""
 from flask import jsonify
+from models import classes
 from models import storage
+from api.v1.views import app_views
 
 
-@app_views.route('/status', strict_slashes=False)
-def service_status():
-    """returns the status of the RESTful service"""
-    """ TODO check if this formatting is okay for json response with
-        holberton checker """
-    return jsonify({'status': 'OK'})
+@app_views.route("/status")
+def status():
+    """
+    return status in json
+    """
+    stat = {"status": "OK"}
+    return (jsonify(stat))
 
 
-@app_views.route('/stats', strict_slashes=False)
-def object_stats():
-    """returns the count of object types"""
-
-    classes = {
-        "amenities": "Amenity",
-        "cities": "City",
-        "places": "Place",
-        "reviews": "Review",
-        "states": "State",
-        "users": "User"
-        }
-    for k, v in classes.items():
-        classes[k] = storage.count(v)
-    return jsonify(classes)
+@app_views.route("/stats")
+def stats():
+    """
+    endpoint that retrieves number of obj by type
+    """
+    dic = {"amenities": 0, "cities": 0, "places": 0,
+           "reviews": 0, "states": 0, "users": 0}
+    cls = ["Amenity", "City", "Place", "Review", "State", "User"]
+    st = ["amenities", "cities", "places", "reviews", "states", "users"]
+    for c in range(len(cls)):
+        try:
+            dic[st[c]] = storage.count(cls[c])
+        except Exception:
+            continue
+    return (jsonify(dic))
